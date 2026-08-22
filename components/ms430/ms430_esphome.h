@@ -18,6 +18,7 @@
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/i2c/i2c.h"
 
 // Choose time interval for reading data (every 3, 100, or 300 seconds)
 // 100 or 300 seconds are recommended to avoid self-heating.
@@ -30,7 +31,7 @@ extern bool enableSerial;
 namespace esphome {
 namespace ms430 {
 
-class MS430 : public Component {
+class MS430 : public Component, public i2c::I2CDevice {
     public:
         void set_temperature_s(sensor::Sensor *s) { temperature_sensor = s; }
         void set_pressure_s(sensor::Sensor *s) { pressure_sensor = s; }
