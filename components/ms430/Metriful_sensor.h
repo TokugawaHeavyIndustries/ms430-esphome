@@ -35,7 +35,7 @@
 //    PARTICLE_SENSOR_OFF      if no sensor is connected
 
 // The I2C address of the MS430 board. 
-#define I2C_ADDRESS I2C_ADDR_7BIT_SB_OPEN
+//--> #define I2C_ADDRESS I2C_ADDR_7BIT_SB_OPEN
 // The default is I2C_ADDR_7BIT_SB_OPEN and must be changed to 
 // I2C_ADDR_7BIT_SB_CLOSED if the solder bridge SB1 on the board 
 // is soldered closed
