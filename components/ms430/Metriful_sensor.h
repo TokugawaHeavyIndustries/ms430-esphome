@@ -21,7 +21,6 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include "sensor_constants.h"
-#include "host_pin_definitions.h"
 #include "esphome/components/i2c/i2c.h"
 
 // Un-comment the following line to display temperatures in Fahrenheit
