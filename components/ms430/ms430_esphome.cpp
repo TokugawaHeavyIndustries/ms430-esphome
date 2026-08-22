@@ -23,7 +23,6 @@ namespace ms430 {
 
 void MS430::setup()
 {
-    enableSerial = false;
 
     uint8_t particleSensor = PARTICLE_SENSOR;
     TransmitI2C(this, PARTICLE_SENSOR_SELECT_REG, &particleSensor, 1);
