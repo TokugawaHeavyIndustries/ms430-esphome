@@ -26,8 +26,6 @@
 
 //////////////////////////////////////////////////////////////
 
-extern bool enableSerial;
-
 namespace esphome {
 namespace ms430 {
 
