@@ -17,6 +17,7 @@ from esphome import codegen
 import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome import const as c
+from esphome.components import i2c
 
 AUTO_LOAD = ['sensor']
 DEPENDENCIES = ['i2c']
@@ -163,7 +164,7 @@ CONFIG_SCHEMA = cv.Schema(
             accuracy_decimals=1,
             device_class=c.DEVICE_CLASS_SOUND_PRESSURE,
             state_class=c.STATE_CLASS_MEASUREMENT,
-        )
+        ).extend(i2c.i2c_device_schema(0x71))
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
@@ -171,6 +172,7 @@ CONFIG_SCHEMA = cv.Schema(
 async def to_code(config):
     var = codegen.new_Pvariable(config[c.CONF_ID])
     await codegen.register_component(var, config)
+    await i2c.register_i2c_device(var, config)
 
     if c.CONF_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[c.CONF_TEMPERATURE])
