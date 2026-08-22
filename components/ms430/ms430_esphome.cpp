@@ -37,17 +37,23 @@ void MS430::setup()
     TransmitI2C(this, CYCLE_MODE_CMD, nullptr, 0);
 }
 
+// void MS430::loop()
+// {
+//     static uint8_t stage = 0;
+//     if (ready_assertion_event)
+//     {
+//         ready_assertion_event = false;
+//         if (stage == 0)
+//         {
+//             stage = 1;
+//         }
+//     }
+//     stage = this->output(stage);
+// }
+
 void MS430::loop()
 {
-    static uint8_t stage = 0;
-    if (ready_assertion_event)
-    {
-        ready_assertion_event = false;
-        if (stage == 0)
-        {
-            stage = 1;
-        }
-    }
+    static uint8_t stage = 1;
     stage = this->output(stage);
 }
 
