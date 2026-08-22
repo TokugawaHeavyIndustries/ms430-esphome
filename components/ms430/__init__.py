@@ -18,6 +18,8 @@ import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome import const as c
 
+DEPENDENCIES = ['sensor', 'i2c']
+
 CONF_WHITE_LIGHT = 'white_light'
 CONF_AQI = 'aqi'
 CONF_E_CO2 = 'e_co2'
