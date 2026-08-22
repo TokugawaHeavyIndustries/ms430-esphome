@@ -78,8 +78,8 @@
 ///////////////////////////////////////////////////////////
 
 // I2C address of sensor board: can select using solder bridge
-#define I2C_ADDR_7BIT_SB_OPEN   (uint8_t)0x71   // if solder bridge is left open
-#define I2C_ADDR_7BIT_SB_CLOSED (uint8_t)0x70   // if solder bridge is soldered closed
+#define I2C_ADDR_7BIT_SB_OPEN   0x71   // if solder bridge is left open
+#define I2C_ADDR_7BIT_SB_CLOSED 0x70   // if solder bridge is soldered closed
 
 // Values for enabling/disabling of sensor functions
 #define ENABLED  1
