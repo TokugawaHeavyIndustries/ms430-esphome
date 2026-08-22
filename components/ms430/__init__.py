@@ -40,7 +40,7 @@ CONF_SOUND_BAND_4 = 'sound_band_4'
 CONF_SOUND_BAND_5 = 'sound_band_5'
 
 ns = codegen.esphome_ns.namespace("ms430")
-MS430 = ns.class_("MS430", codegen.Component)
+MS430 = ns.class_("MS430", codegen.Component, i2c.I2CDevice)
 
 CONFIG_SCHEMA = cv.Schema(
     {
