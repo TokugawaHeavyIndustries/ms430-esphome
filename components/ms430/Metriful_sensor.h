@@ -14,6 +14,16 @@
 #ifndef METRIFUL_SENSOR_H
 #define METRIFUL_SENSOR_H
 
+#include "Arduino.h"
+#include <Wire.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include "sensor_constants.h"
+#include "host_pin_definitions.h"
+
 // Un-comment the following line to display temperatures in Fahrenheit
 // else they will be in Celsius
 //#define USE_FAHRENHEIT
