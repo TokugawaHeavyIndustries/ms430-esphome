@@ -68,23 +68,23 @@ uint8_t MS430::output(uint8_t stage)
     }
     if (stage == 1)
     {
-        airDataF = getAirDataF(I2C_ADDRESS);
+        airDataF = getAirDataF(this);
     }
     if (stage == 2)
     {
-        airQualityDataF = getAirQualityDataF(I2C_ADDRESS);
+        airQualityDataF = getAirQualityDataF(this);
     }
     if ((stage == 3) && (PARTICLE_SENSOR != PARTICLE_SENSOR_OFF))
     {
-        particleDataF = getParticleDataF(I2C_ADDRESS);
+        particleDataF = getParticleDataF(this);
     }
     if (stage == 4)
     {
-        lightDataF = getLightDataF(I2C_ADDRESS);
+        lightDataF = getLightDataF(this);
     }
     if (stage == 5)
     {
-        soundDataF = getSoundDataF(I2C_ADDRESS);
+        soundDataF = getSoundDataF(this);
     }
     if (stage == 6)
     {
