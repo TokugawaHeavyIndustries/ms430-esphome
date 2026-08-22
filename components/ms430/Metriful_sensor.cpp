@@ -13,6 +13,7 @@
 
 #include "Metriful_sensor.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/core/log.h"
 
 volatile bool ready_assertion_event = false;
 
@@ -93,7 +94,16 @@ bool ReceiveI2C(esphome::i2c::I2CDevice *device, uint8_t commandRegister,
   {
     return false;
   }
-  return device->read_register(commandRegister, data, data_length);
+
+  bool result = device->read_register(commandRegister, data, data_length);
+
+  if (!result)
+  {
+    ESP_LOGE("ms430", "I2C read failed: register 0x%02X, length %u",
+             commandRegister, data_length);
+  }
+
+  return result;
 }
 
 const char * interpret_AQI_accuracy(uint8_t AQI_accuracy_code)
