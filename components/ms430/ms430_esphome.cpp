@@ -24,13 +24,15 @@ namespace ms430 {
 void MS430::setup()
 {
     enableSerial = false;
-    SensorHardwareSetup(I2C_ADDRESS);
+
     uint8_t particleSensor = PARTICLE_SENSOR;
-    TransmitI2C(I2C_ADDRESS, PARTICLE_SENSOR_SELECT_REG, &particleSensor, 1);
+    TransmitI2C(this, PARTICLE_SENSOR_SELECT_REG, &particleSensor, 1);
+
     uint8_t cyclePeriod = CYCLE_PERIOD;
-    TransmitI2C(I2C_ADDRESS, CYCLE_TIME_PERIOD_REG, &cyclePeriod, 1);
+    TransmitI2C(this, CYCLE_TIME_PERIOD_REG, &cyclePeriod, 1);
+
     ready_assertion_event = false;
-    TransmitI2C(I2C_ADDRESS, CYCLE_MODE_CMD, 0, 0);
+    TransmitI2C(this, CYCLE_MODE_CMD, nullptr, 0);
 }
 
 void MS430::loop()
