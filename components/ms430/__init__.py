@@ -164,9 +164,9 @@ CONFIG_SCHEMA = cv.Schema(
             accuracy_decimals=1,
             device_class=c.DEVICE_CLASS_SOUND_PRESSURE,
             state_class=c.STATE_CLASS_MEASUREMENT,
-        ).extend(i2c.i2c_device_schema(0x71))
+        )
     }
-).extend(cv.COMPONENT_SCHEMA)
+).extend(cv.COMPONENT_SCHEMA).extend(i2c.i2c_device_schema(0x71))
 
 
 async def to_code(config):
