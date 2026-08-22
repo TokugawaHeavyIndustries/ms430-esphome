@@ -3,6 +3,7 @@
 
   This file declares functions and settings which are used in the code
   examples. The function definitions are in file Metriful_sensor.cpp
+  Refactored for esp-idf.
 
   Copyright 2020-2023 Metriful Ltd.
   Licensed under the MIT License - for further details see LICENSE.txt
@@ -21,6 +22,7 @@
 #include <stdio.h>
 #include "sensor_constants.h"
 #include "host_pin_definitions.h"
+#include "esphome/components/i2c/i2c.h"
 
 // Un-comment the following line to display temperatures in Fahrenheit
 // else they will be in Celsius
@@ -55,11 +57,6 @@
 #define OHM_SYMBOL "Ω"
 
 extern volatile bool ready_assertion_event; 
-
-/////////////////////////////////////////////////////////////////////
-
-// Data category structs containing floats. If floats are not wanted, 
-// use the integer-only struct versions in sensor_constants.h 
 
 typedef struct
 {
@@ -98,9 +95,6 @@ typedef struct
   bool valid;
 } ParticleData_F_t;
 
-/////////////////////////////////////////////////////////////////////
-
-// Custom type used to select the particle sensor being used (if any)
 typedef enum
 {
   OFF    = PARTICLE_SENSOR_OFF,
@@ -108,7 +102,6 @@ typedef enum
   SDS011 = PARTICLE_SENSOR_SDS011
 } ParticleSensor_t;
 
-// Struct used in the IFTTT example
 typedef struct
 {
   const char * variableName;
@@ -120,7 +113,6 @@ typedef struct
   const char * adviceLow;
 } ThresholdSetting_t;
 
-// Struct used in the Home Assistant example
 typedef struct
 {
   const char * name;
@@ -129,21 +121,14 @@ typedef struct
   uint8_t decimalPlaces;
 } HA_Attributes_t;
 
-/////////////////////////////////////////////////////////////////////
-
-void SensorHardwareSetup(uint8_t i2c_7bit_address);
-void ready_ISR(void);
-
-bool TransmitI2C(uint8_t dev_addr_7bit, uint8_t commandRegister,
+bool TransmitI2C(esphome::i2c::I2CDevice *device, uint8_t commandRegister,
                  const uint8_t * data, uint8_t data_length);
-bool ReceiveI2C(uint8_t dev_addr_7bit, uint8_t commandRegister,
+bool ReceiveI2C(esphome::i2c::I2CDevice *device, uint8_t commandRegister,
                 uint8_t data[], uint8_t data_length);
 
 const char * interpret_AQI_accuracy(uint8_t AQI_accuracy_code);
 const char * interpret_AQI_accuracy_brief(uint8_t AQI_accuracy_code);
 const char * interpret_AQI_value(uint16_t AQI);
-
-void s_printf(const char * format, ...);
 
 void convertAirDataF(const AirData_t * airData_in, AirData_F_t * airDataF_out);
 void convertAirQualityDataF(const AirQualityData_t * airQualityData_in, 
@@ -155,36 +140,21 @@ void convertSoundDataF(const SoundData_t * soundData_in,
 void convertParticleDataF(const ParticleData_t * particleData_in,
                           ParticleData_F_t * particleDataF_out);
 
-void printAirDataF(const AirData_F_t * airDataF);
-void printAirQualityDataF(const AirQualityData_F_t * airQualityDataF);
-void printLightDataF(const LightData_F_t * lightDataF);
-void printSoundDataF(const SoundData_F_t * soundDataF);
-void printParticleDataF(const ParticleData_F_t * particleDataF,
-                        uint8_t particleSensor);
-
-void printAirData(const AirData_t * airData, bool printColumns);
-void printAirQualityData(const AirQualityData_t * airQualityData,
-                         bool printColumns);
-void printLightData(const LightData_t * lightData, bool printColumns);
-void printSoundData(const SoundData_t * soundData, bool printColumns);
-void printParticleData(const ParticleData_t * particleData,
-                       bool printColumns, uint8_t particleSensor);
-
-bool setSoundInterruptThreshold(uint8_t dev_addr_7bit, uint16_t threshold_mPa);
-bool setLightInterruptThreshold(uint8_t dev_addr_7bit, uint16_t thres_lux_int,
+bool setSoundInterruptThreshold(esphome::i2c::I2CDevice *device, uint16_t threshold_mPa);
+bool setLightInterruptThreshold(esphome::i2c::I2CDevice *device, uint16_t thres_lux_int,
                                 uint8_t thres_lux_fr_2dp);
 
-SoundData_t getSoundData(uint8_t i2c_7bit_address);
-AirData_t getAirData(uint8_t i2c_7bit_address);
-LightData_t getLightData(uint8_t i2c_7bit_address);
-AirQualityData_t getAirQualityData(uint8_t i2c_7bit_address);
-ParticleData_t getParticleData(uint8_t i2c_7bit_address);
+SoundData_t getSoundData(esphome::i2c::I2CDevice *device);
+AirData_t getAirData(esphome::i2c::I2CDevice *device);
+LightData_t getLightData(esphome::i2c::I2CDevice *device);
+AirQualityData_t getAirQualityData(esphome::i2c::I2CDevice *device);
+ParticleData_t getParticleData(esphome::i2c::I2CDevice *device);
 
-SoundData_F_t getSoundDataF(uint8_t i2c_7bit_address);
-AirData_F_t getAirDataF(uint8_t i2c_7bit_address);
-LightData_F_t getLightDataF(uint8_t i2c_7bit_address);
-AirQualityData_F_t getAirQualityDataF(uint8_t i2c_7bit_address);
-ParticleData_F_t getParticleDataF(uint8_t i2c_7bit_address);
+SoundData_F_t getSoundDataF(esphome::i2c::I2CDevice *device);
+AirData_F_t getAirDataF(esphome::i2c::I2CDevice *device);
+LightData_F_t getLightDataF(esphome::i2c::I2CDevice *device);
+AirQualityData_F_t getAirQualityDataF(esphome::i2c::I2CDevice *device);
+ParticleData_F_t getParticleDataF(esphome::i2c::I2CDevice *device);
 
 float convertCtoF(float C);
 void convertCtoF_int(float C, uint8_t * F_int, uint8_t * F_fr_1dp,
