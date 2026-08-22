@@ -14,8 +14,6 @@
 #ifndef METRIFUL_SENSOR_H
 #define METRIFUL_SENSOR_H
 
-#include "Arduino.h"
-#include <Wire.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
