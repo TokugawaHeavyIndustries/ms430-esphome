@@ -23,12 +23,8 @@ namespace ms430 {
 
 void MS430::setup()
 {
-    pinMode(READY_PIN, INPUT);
-    pinMode(L_INT_PIN, INPUT);
-    pinMode(S_INT_PIN, INPUT);
-
-    attachInterrupt(digitalPinToInterrupt(READY_PIN), ready_ISR, FALLING);
     ready_assertion_event = false;
+
     TransmitI2C(this, RESET_CMD, nullptr, 0);
     delay(5);
 
