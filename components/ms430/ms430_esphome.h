@@ -19,6 +19,7 @@
 #include "esphome/core/hal.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/core/gpio.h"
 
 // Choose time interval for reading data (every 3, 100, or 300 seconds)
 // 100 or 300 seconds are recommended to avoid self-heating.
@@ -31,6 +32,8 @@ namespace ms430 {
 
 class MS430 : public Component, public i2c::I2CDevice {
     public:
+        void set_ready_pin(GPIOPin *pin) { ready_pin_ = pin; }
+
         void set_temperature_s(sensor::Sensor *s) { temperature_sensor = s; }
         void set_pressure_s(sensor::Sensor *s) { pressure_sensor = s; }
         void set_humidity_s(sensor::Sensor *s) { humidity_sensor = s; }
@@ -57,6 +60,9 @@ class MS430 : public Component, public i2c::I2CDevice {
         float get_setup_priority() const override;
 
     protected:
+        GPIOPin *ready_pin_{nullptr};
+        bool last_ready_state_{true};
+
         uint8_t output(uint8_t stage);
         sensor::Sensor *temperature_sensor{nullptr};
         sensor::Sensor *pressure_sensor{nullptr};
