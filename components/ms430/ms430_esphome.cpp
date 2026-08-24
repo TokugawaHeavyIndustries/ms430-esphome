@@ -23,37 +23,48 @@ namespace ms430 {
 
 void MS430::setup()
 {
-    ready_assertion_event = false;
 
-    TransmitI2C(this, RESET_CMD, nullptr, 0);
+    if (this->ready_pin_ != nullptr) {
+        this->ready_pin_->setup();
+    }
+  
+    uint8_t reset_cmd = RESET_CMD;
+    this->write(&reset_cmd, 1);
     delay(5);
 
     uint8_t particleSensor = PARTICLE_SENSOR;
     TransmitI2C(this, PARTICLE_SENSOR_SELECT_REG, &particleSensor, 1);
-
     uint8_t cyclePeriod = CYCLE_PERIOD;
     TransmitI2C(this, CYCLE_TIME_PERIOD_REG, &cyclePeriod, 1);
 
-    TransmitI2C(this, CYCLE_MODE_CMD, nullptr, 0);
+    ready_assertion_event = false;
+    
+    uint8_t cycle_mode = CYCLE_MODE_CMD;
+    this->write(&cycle_mode, 1);
 }
-
-// void MS430::loop()
-// {
-//     static uint8_t stage = 0;
-//     if (ready_assertion_event)
-//     {
-//         ready_assertion_event = false;
-//         if (stage == 0)
-//         {
-//             stage = 1;
-//         }
-//     }
-//     stage = this->output(stage);
-// }
 
 void MS430::loop()
 {
-    static uint8_t stage = 1;
+
+    if (this->ready_pin_ != nullptr) {
+        bool current_ready = this->ready_pin_->digital_read();
+        // If the pin was HIGH on the last loop and is LOW now, data is ready
+        if (this->last_ready_state_ && !current_ready) {
+            ready_assertion_event = true;
+        }
+        this->last_ready_state_ = current_ready;
+    }
+    static uint8_t stage = 0;
+
+    if (ready_assertion_event)
+    {
+        ready_assertion_event = false;
+        if (stage == 0)
+        {
+            stage = 1;
+        }
+    }
+  
     stage = this->output(stage);
 }
 
@@ -111,8 +122,6 @@ uint8_t MS430::output(uint8_t stage)
     }
     if (stage == 7)
     {
-        // Only publish air quality values when the algorithm has
-        // initialized.
         if (this->aqi_acc_sensor != nullptr) {
             this->aqi_acc_sensor->publish_state(airQualityDataF.AQI_accuracy);
         }
