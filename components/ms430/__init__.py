@@ -15,13 +15,14 @@
 
 from esphome import codegen
 import esphome.config_validation as cv
-from esphome.components import sensor
+from esphome.components import sensor, i2c
 from esphome import const as c
-from esphome.components import i2c
+from esphome import pins
 
 AUTO_LOAD = ['sensor']
 DEPENDENCIES = ['i2c']
 
+CONF_READY_PIN = 'ready_pin'
 CONF_WHITE_LIGHT = 'white_light'
 CONF_AQI = 'aqi'
 CONF_E_CO2 = 'e_co2'
@@ -45,6 +46,7 @@ MS430 = ns.class_("MS430", codegen.Component, i2c.I2CDevice)
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(MS430),
+        cv.Required(CONF_READY_PIN): pins.gpio_input_pin_schema,
         cv.Optional(c.CONF_TEMPERATURE): sensor.sensor_schema(
             unit_of_measurement=c.UNIT_CELSIUS,
             accuracy_decimals=1,
@@ -173,6 +175,9 @@ async def to_code(config):
     var = codegen.new_Pvariable(config[c.CONF_ID])
     await codegen.register_component(var, config)
     await i2c.register_i2c_device(var, config)
+
+    pin = await cg.gpio_pin_expression(config[CONF_READY_PIN])
+    cg.add(var.set_ready_pin(pin))
 
     if c.CONF_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[c.CONF_TEMPERATURE])
