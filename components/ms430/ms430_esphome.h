@@ -23,7 +23,7 @@
 
 // Choose time interval for reading data (every 3, 100, or 300 seconds)
 // 100 or 300 seconds are recommended to avoid self-heating.
-#define CYCLE_PERIOD CYCLE_PERIOD_100_S
+#define CYCLE_PERIOD CYCLE_PERIOD_3_S
 
 //////////////////////////////////////////////////////////////
 
