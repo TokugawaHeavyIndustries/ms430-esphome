@@ -176,7 +176,7 @@ async def to_code(config):
     await codegen.register_component(var, config)
     await i2c.register_i2c_device(var, config)
 
-    pin = await cg.gpio_pin_expression(config[CONF_READY_PIN])
+    pin = await codegen.gpio_pin_expression(config[CONF_READY_PIN])
     cg.add(var.set_ready_pin(pin))
 
     if c.CONF_TEMPERATURE in config:
