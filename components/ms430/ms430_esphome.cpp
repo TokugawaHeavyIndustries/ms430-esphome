@@ -28,17 +28,27 @@ void MS430::setup()
         this->ready_pin_->setup();
     }
   
+    uint32_t start_time = millis();
+    while (this->ready_pin_->digital_read() && (millis() - start_time < 2000)) {
+        delay(10);
+    }
+  
     uint8_t reset_cmd = RESET_CMD;
     this->write(&reset_cmd, 1);
-    delay(5);
-
+    delay(10); // Give the sensor a moment to process the reset
+    start_time = millis();
+    while (this->ready_pin_->digital_read() && (millis() - start_time < 2000)) {
+        delay(10);
+    } 
+  
     uint8_t particleSensor = PARTICLE_SENSOR;
     TransmitI2C(this, PARTICLE_SENSOR_SELECT_REG, &particleSensor, 1);
+    
     uint8_t cyclePeriod = CYCLE_PERIOD;
     TransmitI2C(this, CYCLE_TIME_PERIOD_REG, &cyclePeriod, 1);
-
-    ready_assertion_event = false;
     
+    ready_assertion_event = false;
+
     uint8_t cycle_mode = CYCLE_MODE_CMD;
     this->write(&cycle_mode, 1);
 }
