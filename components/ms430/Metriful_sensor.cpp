@@ -79,11 +79,12 @@ bool TransmitI2C(esphome::i2c::I2CDevice *device, uint8_t commandRegister,
 {
   if (data_length > 0)
   {
-    return device->write_register(commandRegister, data, data_length);
+    return device->write_register(commandRegister, data, data_length)
+           == esphome::i2c::ERROR_OK;
   }
   else
   {
-    return device->write(&commandRegister, 1);
+    return device->write(&commandRegister, 1) == esphome::i2c::ERROR_OK;
   }
 }
 
@@ -95,7 +96,8 @@ bool ReceiveI2C(esphome::i2c::I2CDevice *device, uint8_t commandRegister,
     return false;
   }
 
-  bool result = device->read_register(commandRegister, data, data_length);
+  bool result = (device->read_register(commandRegister, data, data_length)
+                 == esphome::i2c::ERROR_OK);
 
   if (!result)
   {

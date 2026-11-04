@@ -33,6 +33,9 @@ CONF_SOUND_SPL = 'sound_spl'
 CONF_SOUND_PEAK = 'sound_peak'
 UNIT_DECIBEL_A = "dBA"
 UNIT_MILLIPASCAL = "mPa"
+# PPD42 reports particles per litre; SDS011 reports ug/m3.
+# Override unit_of_measurement in YAML if you switch to an SDS011.
+UNIT_PARTICLES_PER_LITRE = "ppL"
 CONF_SOUND_BAND_0 = 'sound_band_0'
 CONF_SOUND_BAND_1 = 'sound_band_1'
 CONF_SOUND_BAND_2 = 'sound_band_2'
@@ -114,7 +117,7 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=c.STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_PARTICLE_CONC): sensor.sensor_schema(
-            unit_of_measurement=c.UNIT_MICROGRAMS_PER_CUBIC_METER,
+            unit_of_measurement=UNIT_PARTICLES_PER_LITRE,
             accuracy_decimals=2,
             device_class=c.DEVICE_CLASS_EMPTY,
             state_class=c.STATE_CLASS_MEASUREMENT,

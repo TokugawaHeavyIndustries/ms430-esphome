@@ -29,7 +29,8 @@ void MS430::setup()
     }
   
     uint32_t start_time = millis();
-    while (this->ready_pin_->digital_read() && (millis() - start_time < 2000)) {
+    while ((this->ready_pin_ != nullptr) && this->ready_pin_->digital_read()
+           && (millis() - start_time < 2000)) {
         delay(10);
     }
   
@@ -37,7 +38,8 @@ void MS430::setup()
     this->write(&reset_cmd, 1);
     delay(10); // Give the sensor a moment to process the reset
     start_time = millis();
-    while (this->ready_pin_->digital_read() && (millis() - start_time < 2000)) {
+    while ((this->ready_pin_ != nullptr) && this->ready_pin_->digital_read()
+           && (millis() - start_time < 2000)) {
         delay(10);
     } 
   
