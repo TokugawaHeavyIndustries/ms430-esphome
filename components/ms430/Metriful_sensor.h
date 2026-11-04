@@ -28,7 +28,7 @@
 //#define USE_FAHRENHEIT
 
 // Specify which particle sensor is connected:
-#define PARTICLE_SENSOR PARTICLE_SENSOR_OFF
+#define PARTICLE_SENSOR PARTICLE_SENSOR_PPD42
 // Define PARTICLE_SENSOR as:
 //    PARTICLE_SENSOR_PPD42    for the Shinyei PPD42
 //    PARTICLE_SENSOR_SDS011   for the Nova SDS011
