@@ -47,7 +47,7 @@ The MS430 is compatible with `Shinyei PPD42` and  `Nova SDS011`. The particle se
 
 ## Configuration
 
-Add the following to your device's ESPHome YAML, setting the I2C pins and the pin connected to the MS430 **RDY** output to match your wiring:
+Add the following to your device's ESPHome YAML, set the I2C pins, and your RDY pin:
 
 ```yaml
 external_components:
@@ -61,8 +61,6 @@ i2c:
 ms430:
   ready_pin: 0
 ```
-
-That is all that is required. Every MS430 measurement is created automatically with a name and icon:
 
 | Key | Default name |
 |:----|:-------------|
@@ -78,25 +76,17 @@ That is all that is required. Every MS430 measurement is created automatically w
 | b_voc | Equivalent breath VOC |
 | white_light | White light level |
 | illuminance | Illuminance |
-| particle_duty | Particle sensor duty cycle |
-| particle_concentration | Particle concentration |
 | sound_spl | Sound pressure level |
 | sound_peak | Peak sound amplitude |
 | sound_band_0 ... sound_band_5 | SPL at 125 / 250 / 500 / 1000 / 2000 / 4000 Hz |
+| particle_duty | Particle sensor duty cycle (if enabled) |
+| particle_concentration | Particle concentration (if enabled) |
 
 The air quality values are only published once the sensor's self-calibration has started (accuracy above "Not yet valid").
 
 ### Options
 
-```yaml
-ms430:
-  ready_pin: 0
-  address: 0x71          # 0x70 if solder bridge SB1 is closed
-  particle_sensor: PPD42 # PPD42 (default), SDS011 or NONE
-  cycle_period: 3s       # 3s (default), 100s or 300s
-```
-
-* **particle_sensor**: selects the connected particle sensor. This tells the MS430 which sensor is attached and sets up the particle sensors in Home Assistant to match:
+* **particle_sensor**: selects the connected particle sensor. This tells the MS430 which sensor is attached and sets up the particle sensors in Home Assistant to match.  Defaults to NONE.
 
   | Setting | Concentration unit | HA device class | Particle sensors created |
   |:-------:|:------------------:|:---------------:|:------------------------:|
@@ -105,15 +95,21 @@ ms430:
   | NONE | - | - | no |
 
   A unit or device class you set yourself on **particle_concentration** is kept.
-* **cycle_period**: how often the MS430 takes a measurement. 100s or 300s are recommended to avoid self-heating of the board, which raises the temperature reading.
+  
+* **cycle_period**: how often the MS430 takes a measurement. 100s-300s are recommended to avoid self-heating of the board, which raises the temperature reading.  Defaults to 100s if not set.
+
+* **address**: I2C address.  If SB1 is bridged on the MS430, set to 0x70.  Defaults to 0x71 if not set. 
 
 ### Customizing sensors
 
-Any setting of any sensor can be overridden by listing it, for example a new name or a filter. Settings you don't list keep their defaults:
+To hide a measurement from Home Assistant, set **internal: true** on it.  Additionally, any setting of any sensor can be overridden by listing it and defining options/filters.  For example:
 
 ```yaml
 ms430:
   ready_pin: 0
+  address: 0x70
+  particle_sensor: PPD42
+  cycle_period: 5s
   temperature:
     name: "Living room temperature"
     filters:
@@ -122,11 +118,7 @@ ms430:
     internal: true   # hide from Home Assistant
 ```
 
-To hide a measurement from Home Assistant, set **internal: true** on it.
 
-### Adding the device to Home Assistant
-
-After installing the firmware, Home Assistant normally shows a notification that a new ESPHome device has been discovered. Click "configure" on it and enter the device's API encryption key. If it is not discovered automatically, go to Settings > Devices & Services > Devices tab > "Add device", search for ESPHome, and enter **<device_name>.local** as the host.
 
 ## License
 
