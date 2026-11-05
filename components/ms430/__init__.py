@@ -164,8 +164,8 @@ def apply_particle_sensor(config):
 schema = {
     cv.GenerateID(): cv.declare_id(MS430),
     cv.Required(CONF_READY_PIN): pins.gpio_input_pin_schema,
-    cv.Optional(CONF_PARTICLE_SENSOR, default="PPD42"): particle_sensor_type,
-    cv.Optional(CONF_CYCLE_PERIOD, default="3s"):
+    cv.Optional(CONF_PARTICLE_SENSOR, default="NONE"): particle_sensor_type,
+    cv.Optional(CONF_CYCLE_PERIOD, default="100s"):
         cv.enum(CYCLE_PERIODS, lower=True),
 }
 for key, _, name, sensor_schema, extra in SENSORS:

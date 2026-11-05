@@ -68,8 +68,8 @@ class MS430 : public Component, public i2c::I2CDevice {
         ParticleData_F_t particleDataF_{};
         LightData_F_t lightDataF_{};
         SoundData_F_t soundDataF_{};
-        uint8_t particle_sensor_{PARTICLE_SENSOR_PPD42};
-        uint8_t cycle_period_{CYCLE_PERIOD_3_S};
+        uint8_t particle_sensor_{PARTICLE_SENSOR_OFF};
+        uint8_t cycle_period_{CYCLE_PERIOD_100_S};
 
         uint8_t output(uint8_t stage);
         sensor::Sensor *temperature_sensor{nullptr};
