@@ -2,7 +2,6 @@
 
 The Metriful MS430 is a low power, high accuracy, smart sensor cluster for indoor environment monitoring. It operates via a simple I2C-compatible interface and measures eighteen variables including air quality, light and sound levels.
 
-
 ### Contents
 
 #### Hardware setup
@@ -16,51 +15,26 @@ The Metriful MS430 is a low power, high accuracy, smart sensor cluster for indoo
 
 
 
-### Wiring for ESP8266
+### Wiring for ESP8266/ESP32
 
-|    MS430 pin    |       ESP8266        | 
-|:---------------:|:--------------------:|
-|        VIN      |        -             |
-|        VDD      |       3V3            |
-|        GND      |       GND            | 
-|        VPU      |       3V3            | 
-|        SCL      |    D1 (GPIO 5)       |
-|        SDA      |    D2 (GPIO 4)       |
-|        LIT      |    D3 (GPIO 0)       |
-|        SIT      |    D5 (GPIO 14)      |
-|        RDY      |    D6 (GPIO 12)      |
+|    MS430 pin    |       ESP8266        |     ESP32     |
+|:---------------:|:--------------------:|:-------------:|
+|        VIN      |        5V            |      5V       |
+|        GND      |        GND           |      GND      | 
+|        VPU      |        5V            |      5V       | 
+|        SCL      |    D1 (GPIO 5)       |      D22      |
+|        SDA      |    D2 (GPIO 4)       |      D21      |
+|        RDY      |    D6 (GPIO 12)      |      D23      |
 
-* The **D** pin numbers refer to the usual pin labels printed on the development board. The GPIO numbers are the actual ESP8266 I/O identities.
-* MS430 pin VIN is not used.
-* LIT/SIT connections are optional and only required if you are using light/sound interrupts.
-* VPU can be supplied from any spare host digital output pin set to a high voltage state. This can be useful for hosts without enough power output pins.
-
-
-### Wiring for ESP32
-
-|    MS430 pin    |     ESP32     |
-|:---------------:|:-------------:|
-|        VIN      |       -       |
-|        VDD      |      3V3      |
-|        GND      |      GND      | 
-|        VPU      |      3V3      | 
-|        SCL      |      D22      |
-|        SDA      |      D21      |
-|        LIT      |      D18      |
-|        SIT      |      D19      |
-|        RDY      |      D23      |
-
-* MS430 pin VIN is not used.
-* LIT/SIT connections are optional and only required if you are using light/sound interrupts.
-* VPU can be supplied from any spare host digital output pin set to a high voltage state. This can be useful for hosts without enough power output pins.
-
+* VPU is a pull-up pin.  Feel free to jumper it to VIN at the MS430.
+* PRT is used with particle sensors.
+* SIT/LIT are interrupt lines and are not implemented for ESPHome.
+* If you don't have 5V, leave VIN disconnected and connect VDD/VPU to 3V3.
 
 
 ## Connecting and enabling a particle sensor
 
-The MS430 is compatible with two widely-available air particle sensors: the Shinyei PPD42 and the Nova SDS011. The particle sensor is optional and only a single sensor can be connected at any time. **The PPD42 is not recommended** and is supported for backwards compatibility only.
-
-Both sensor models require three wire connections: **5V, GND, PRT** and a small edit to the example code.
+The MS430 is compatible with `Shinyei PPD42` and  `Nova SDS011`. The particle sensor is optional and only a single sensor can be connected at any time.
 
 |       | PPD42 pin number | SDS011 pin label |
 |:-----:|:----------------:|:----------------:|
@@ -68,25 +42,10 @@ Both sensor models require three wire connections: **5V, GND, PRT** and a small 
 |  GND  |        1         |        GND       |
 |  PRT  |        4         |        25um      | 
 
-* PRT is on the MS430 board
-* 5V and GND are supplied by the host system, or from a separate power supply. If using a separate power supply, the power supply GND must be connected to host GND.
-* The SDS011 pin labeled "25um" is the data output for 0.3 - 10 µm particles.
+* It's easiest to connect all three pins to the MS430 rather than run two separate jumpers back to your ESP board.
+* Particle sensors require 5V and are therefore incompatible if using 3V3 via the VDD pin.
 
-5V is available from the hosts when they are powered from a USB power supply:
-
-|      Host device      | 5V pin name/number |
-|:---------------------:|:------------------:|
-|       ESP8266         |  5V or Vin or VU   |
-|        ESP32          |        VIN         |
-
-
-
-## ESPHome for Home Assistant
-
-Send sensor data to an installation of [Home Assistant](https://www.home-assistant.io) using the [ESPHome system](https://esphome.io). The MS430 is provided as an ESPHome external component (in the **components/ms430** folder of this repository), built on ESPHome's native I2C driver with no Arduino dependency.
-
-
-### Minimal configuration
+## Configuration
 
 Add the following to your device's ESPHome YAML, setting the I2C pins and the pin connected to the MS430 **RDY** output to match your wiring:
 
