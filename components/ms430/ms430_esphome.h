@@ -1,10 +1,7 @@
 /*
   ms430_esphome.h
 
-  This file creates an interface so that the MS430 Arduino code can
-  be used as an external component in ESPHome.
-
-  Suitable for ESP8266, ESP32 and Raspberry Pi Pico W.
+  ESPHome external component for the Metriful MS430 environment sensor.
 
   Copyright 2025 Metriful Ltd.
   Licensed under the MIT License - for further details see LICENSE.txt
@@ -18,14 +15,11 @@
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/core/gpio.h"
-
-// Choose time interval for reading data (every 3, 100, or 300 seconds)
-// 100 or 300 seconds are recommended to avoid self-heating.
-#define CYCLE_PERIOD CYCLE_PERIOD_3_S
-
-//////////////////////////////////////////////////////////////
+#include "sensor_constants.h"
+#include "Metriful_sensor.h"
 
 namespace esphome {
 namespace ms430 {
@@ -33,6 +27,9 @@ namespace ms430 {
 class MS430 : public Component, public i2c::I2CDevice {
     public:
         void set_ready_pin(GPIOPin *pin) { ready_pin_ = pin; }
+        // Particle sensor type and cycle period are set from YAML
+        void set_particle_sensor(uint8_t type) { particle_sensor_ = type; }
+        void set_cycle_period(uint8_t period) { cycle_period_ = period; }
 
         void set_temperature_s(sensor::Sensor *s) { temperature_sensor = s; }
         void set_pressure_s(sensor::Sensor *s) { pressure_sensor = s; }
@@ -54,6 +51,8 @@ class MS430 : public Component, public i2c::I2CDevice {
         void set_sound_band3_s(sensor::Sensor *s) { sound_band3_sensor = s; }
         void set_sound_band4_s(sensor::Sensor *s) { sound_band4_sensor = s; }
         void set_sound_band5_s(sensor::Sensor *s) { sound_band5_sensor = s; }
+        void set_aqi_text_s(text_sensor::TextSensor *s) { aqi_text_sensor = s; }
+        void set_aqi_acc_text_s(text_sensor::TextSensor *s) { aqi_acc_text_sensor = s; }
 
         void setup() override;
         void loop() override;
@@ -62,6 +61,15 @@ class MS430 : public Component, public i2c::I2CDevice {
     protected:
         GPIOPin *ready_pin_{nullptr};
         bool last_ready_state_{true};
+        uint8_t stage_{0};
+
+        AirData_F_t airDataF_{};
+        AirQualityData_F_t airQualityDataF_{};
+        ParticleData_F_t particleDataF_{};
+        LightData_F_t lightDataF_{};
+        SoundData_F_t soundDataF_{};
+        uint8_t particle_sensor_{PARTICLE_SENSOR_PPD42};
+        uint8_t cycle_period_{CYCLE_PERIOD_3_S};
 
         uint8_t output(uint8_t stage);
         sensor::Sensor *temperature_sensor{nullptr};
@@ -84,6 +92,8 @@ class MS430 : public Component, public i2c::I2CDevice {
         sensor::Sensor *sound_band3_sensor{nullptr};
         sensor::Sensor *sound_band4_sensor{nullptr};
         sensor::Sensor *sound_band5_sensor{nullptr};
+        text_sensor::TextSensor *aqi_text_sensor{nullptr};
+        text_sensor::TextSensor *aqi_acc_text_sensor{nullptr};
         bool AQIinitialized = false;
 };
 

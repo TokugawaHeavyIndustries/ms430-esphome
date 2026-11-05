@@ -1,21 +1,15 @@
 /*
   Metriful_sensor.cpp
 
-  This file defines functions which are used in the code examples.
-  Refactored for esp-idf.
+  Defines the MS430 I2C helpers and data decoding functions.
 
   Copyright 2020-2023 Metriful Ltd.
   Licensed under the MIT License - for further details see LICENSE.txt
-
-  For code examples, datasheet and user guide, visit
-  https://github.com/metriful/sensor
 */
 
 #include "Metriful_sensor.h"
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/core/log.h"
-
-volatile bool ready_assertion_event = false;
 
 void convertAirDataF(const AirData_t * airData_in, AirData_F_t * airDataF_out)
 {
@@ -108,22 +102,6 @@ bool ReceiveI2C(esphome::i2c::I2CDevice *device, uint8_t commandRegister,
   return result;
 }
 
-const char * interpret_AQI_accuracy(uint8_t AQI_accuracy_code)
-{
-  switch (AQI_accuracy_code)
-  {
-    default:
-    case 0:
-      return "Not yet valid, self-calibration incomplete";
-    case 1:
-      return "Low accuracy, self-calibration ongoing";
-    case 2:
-      return "Medium accuracy, self-calibration ongoing";
-    case 3:
-      return "High accuracy";
-  }
-}
-
 const char * interpret_AQI_accuracy_brief(uint8_t AQI_accuracy_code)
 {
   switch (AQI_accuracy_code)
@@ -160,28 +138,6 @@ const char * interpret_AQI_value(uint16_t AQI)
   else {
     return "Very bad";
   }
-}
-
-bool setSoundInterruptThreshold(esphome::i2c::I2CDevice *device,
-                                uint16_t threshold_mPa)
-{
-  uint8_t TXdata[SOUND_INTERRUPT_THRESHOLD_BYTES] = {0};
-  TXdata[0] = (uint8_t) (threshold_mPa & 0x00FF);
-  TXdata[1] = (uint8_t) (threshold_mPa >> 8);
-  return TransmitI2C(device, SOUND_INTERRUPT_THRESHOLD_REG,
-                     TXdata, SOUND_INTERRUPT_THRESHOLD_BYTES);
-}
-
-bool setLightInterruptThreshold(esphome::i2c::I2CDevice *device,
-                                uint16_t thres_lux_int,
-                                uint8_t thres_lux_fr_2dp)
-{
-  uint8_t TXdata[LIGHT_INTERRUPT_THRESHOLD_BYTES] = {0};
-  TXdata[0] = (uint8_t) (thres_lux_int & 0x00FF);
-  TXdata[1] = (uint8_t) (thres_lux_int >> 8);
-  TXdata[2] = thres_lux_fr_2dp;
-  return TransmitI2C(device, LIGHT_INTERRUPT_THRESHOLD_REG,
-                     TXdata, LIGHT_INTERRUPT_THRESHOLD_BYTES);
 }
 
 SoundData_t getSoundData(esphome::i2c::I2CDevice *device)
@@ -264,27 +220,6 @@ ParticleData_F_t getParticleDataF(esphome::i2c::I2CDevice *device)
   return particleDataF;
 }
 
-float convertCtoF(float C)
-{
-  return ((C * 1.8f) + 32.0f);
-}
-
-void convertCtoF_int(float C, uint8_t * F_int, uint8_t * F_fr_1dp,
-                     bool * isPositive)
-{
-  float F = convertCtoF(C);
-  bool isNegative = (F < 0.0f);
-  if (isNegative)
-  {
-    F = -F;
-  }
-  F += 0.05f;
-  F_int[0] = (uint8_t) F;
-  F -= (float) F_int[0];
-  F_fr_1dp[0] = (uint8_t) (F * 10.0f);
-  isPositive[0] = (!isNegative);
-}
-
 float convertEncodedTemperatureToFloat(uint8_t T_C_int_with_sign,
                                        uint8_t T_C_fr_1dp)
 {
@@ -297,22 +232,4 @@ float convertEncodedTemperatureToFloat(uint8_t T_C_int_with_sign,
     temperature_C = -temperature_C;
   }
   return temperature_C;
-}
-
-const char * getTemperature(const AirData_t * pAirData, uint8_t * T_intPart, 
-                            uint8_t * T_fractionalPart, bool * isPositive)
-{
-  #ifdef USE_FAHRENHEIT
-    float temperature_C = convertEncodedTemperatureToFloat(
-                              pAirData->T_C_int_with_sign, 
-                              pAirData->T_C_fr_1dp);
-    convertCtoF_int(temperature_C, T_intPart, T_fractionalPart, isPositive);
-    return FAHRENHEIT_SYMBOL;
-  #else
-    isPositive[0] = ((pAirData->T_C_int_with_sign
-                      & TEMPERATURE_SIGN_MASK) == 0);
-    T_intPart[0] = pAirData->T_C_int_with_sign & TEMPERATURE_VALUE_MASK;
-    T_fractionalPart[0] = pAirData->T_C_fr_1dp;
-    return CELSIUS_SYMBOL;
-  #endif
 }
